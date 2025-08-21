@@ -1,0 +1,9 @@
+kind: pipeline
+type: kubernetes
+name: default
+
+steps:
+- name: install
+  image: python:3.12-slim
+  commands:
+  - pip install -r requirements.txt
