@@ -40,7 +40,7 @@ trigger:
     - promote
 steps:
   - name: deploy-prod
-    image: alpine/k8s:1.33.1
+    image: bitnami/kubectl:1.33.1
     commands:
       - kubectl get pods
       - kubectl set image deployment/fstack-be fstack-be=192.168.49.2:5000/fstack-be:${DRONE_COMMIT_SHA:0:8}
