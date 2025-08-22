@@ -28,7 +28,7 @@ services:
   - name: docker
     image: docker:dind
     privileged: true
-    command: ["--insecure-registry=192.168.49.2:5000"]
+    # command: ["--insecure-registry=192.168.49.2:5000"]
     volumes:
       - name: dockersock
         path: /var/run
