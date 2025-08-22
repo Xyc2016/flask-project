@@ -35,7 +35,7 @@ services:
   - name: docker
     image: docker:dind
     privileged: true
-    command: [ "sh", "-c", "echo '{\"insecure-registries\": [\"192.168.49.2:5000\"]}' > /etc/docker/daemon.json && dockerd" ]
+    command: [ "sh", "-c", "mkdir -p /etc/docker/ && echo '{\"insecure-registries\": [\"192.168.49.2:5000\"]}' > /etc/docker/daemon.json && dockerd" ]
     volumes:
       - name: dockersock
         path: /var/run
