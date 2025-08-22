@@ -1,9 +1,9 @@
 kind: pipeline
 type: kubernetes # Note, it's where your runners run.
-name: build
+name: build-push
 
 steps:
-  - name: build
+  - name: docker-build
     image: plugins/docker
     volumes:
       - name: dockersock
