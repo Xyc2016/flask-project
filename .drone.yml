@@ -2,8 +2,24 @@ kind: pipeline
 type: kubernetes
 name: default
 
+
+environment:
+  REGISTRY: 192.168.49.2:5000
+
 steps:
 - name: install
   image: python:3.12-slim
   commands:
   - pip install -r requirements.txt
+
+- name: build
+  image: plugins/docker
+  settings:
+    repo: ${REGISTRY}/fstack-be
+    tags:
+      - ${DRONE_COMMIT_SHA:0:8}
+      - latest
+    registry: ${REGISTRY}
+    insecure: true
+  when:
+    event: [push]
