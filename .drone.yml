@@ -15,6 +15,9 @@ environment:
 steps:
 - name: build
   image: plugins/docker
+  volumes:
+  - name: dockersock
+    path: /var/run
   settings:
     repo: ${REGISTRY}/fstack-be
     tags:
