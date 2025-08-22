@@ -12,22 +12,22 @@ steps:
   commands:
   - pip install -r requirements.txt
 
-# - name: build
-#   image: plugins/docker
-#   settings:
-#     repo: ${REGISTRY}/fstack-be
-#     tags:
-#       - ${DRONE_COMMIT_SHA:0:8}
-#       - latest
-#     registry: ${REGISTRY}
-#     insecure: true
-#   when:
-#     event: [push]
+- name: build
+  image: plugins/docker
+  settings:
+    repo: ${REGISTRY}/fstack-be
+    tags:
+      - ${DRONE_COMMIT_SHA:0:8}
+      - latest
+    registry: ${REGISTRY}
+    insecure: true
+  when:
+    event: [push]
 
-# services:
-# - name: dind
-#   image: docker:dind
-#   privileged: true
-#   volumes:
-#   - name: dockersock
-#     path: /var/run
+services:
+- name: dind
+  image: docker:dind
+  privileged: true
+  volumes:
+  - name: dockersock
+    path: /var/run
