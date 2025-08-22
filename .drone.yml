@@ -23,3 +23,11 @@ steps:
     insecure: true
   when:
     event: [push]
+
+services:
+- name: dind
+  image: docker:dind
+  privileged: true
+  volumes:
+  - name: dockersock
+    path: /var/run
