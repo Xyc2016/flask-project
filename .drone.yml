@@ -42,6 +42,7 @@ steps:
   - name: deploy-prod
     image: bitnami/kubectl:1.33.1
     commands:
+      - kubectl config view
       - kubectl config get-contexts
       - kubectl config set-context --current --namespace=default
       - kubectl cluster-info
