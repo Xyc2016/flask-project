@@ -6,28 +6,30 @@ name: default
 environment:
   REGISTRY: 192.168.49.2:5000
 
-steps:
-- name: install
-  image: python:3.12-slim
-  commands:
-  - pip install -r requirements.txt
+# steps:
+# - name: install
+#   image: python:3.12-slim
+#   commands:
+#   - pip install -r requirements.txt
 
-- name: build
-  image: plugins/docker
-  settings:
-    repo: ${REGISTRY}/fstack-be
-    tags:
-      - ${DRONE_COMMIT_SHA:0:8}
-      - latest
-    registry: ${REGISTRY}
-    insecure: true
-  when:
-    event: [push]
+steps:
+- name: test
+  image: docker:dind
+  volumes:
+  - name: dockersock
+    path: /var/run
+  commands:
+  - sleep 5 # give docker enough time to start
+  - docker ps -a
 
 services:
-- name: dind
+- name: docker
   image: docker:dind
   privileged: true
   volumes:
   - name: dockersock
     path: /var/run
+
+volumes:
+- name: dockersock
+  temp: {}
