@@ -51,6 +51,3 @@ steps:
     volumes:
       - name: kubeconfig
         path: /etc/kube
-    when:
-      branch: main
-      event: push
