@@ -25,24 +25,25 @@ steps:
       event: [push]
 
 services:
-  - name: helper
-    image: alpine:3
-    volumes:
-      - name: docker-daemon-json
-        path: /etc/docker/daemon.json
-    command: ["sh", "-c", 'echo ''{"insecure-registries":["192.168.49.2:5000"]}'' > /etc/docker/daemon.json']
+  # - name: helper
+  #   image: alpine:3
+  #   volumes:
+  #     - name: docker-daemon-json
+  #       path: /etc/docker/daemon.json
+  #   command: ["sh", "-c", 'echo ''{"insecure-registries":["192.168.49.2:5000"]}'' > /etc/docker/daemon.json']
 
   - name: docker
     image: docker:dind
     privileged: true
+    command: [ "sh", "-c", "echo '{\"insecure-registries\": [\"192.168.49.2:5000\"]}' > /etc/docker/daemon.json && dockerd" ]
     volumes:
       - name: dockersock
         path: /var/run
-      - name: docker-daemon-json
-        path: /etc/docker/daemon.json
+      # - name: docker-daemon-json
+      #   path: /etc/docker/daemon.json
 
 volumes:
   - name: dockersock
     temp: {}
-  - name: docker-daemon-json
-    temp: {}
+  # - name: docker-daemon-json
+  #   temp: {}
