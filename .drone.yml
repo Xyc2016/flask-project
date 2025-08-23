@@ -1,13 +1,12 @@
 kind: pipeline
-type: kubernetes # Note, it's where your runners run.
+type: kubernetes
 name: build-push
 
 steps:
   - name: docker-build
     image: plugins/docker
-    volumes:
-      - name: dockersock
-        path: /var/run
+    environment:
+      DOCKER_HOST: tcp://builder.default.svc.cluster.local:2375
     settings:
       repo: 192.168.49.2:5000/fstack-be
       tags:
@@ -17,19 +16,6 @@ steps:
       insecure: true
     when:
       event: [push]
-
-services:
-  - name: docker
-    image: docker:dind
-    privileged: true
-    command: ["sh", "-c", "dockerd --insecure-registry 192.168.49.2:5000"]
-    volumes:
-      - name: dockersock
-        path: /var/run
-
-volumes:
-  - name: dockersock
-    temp: {}
 ---
 kind: pipeline
 type: kubernetes
