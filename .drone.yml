@@ -1,36 +1,36 @@
-kind: pipeline
-type: kubernetes # Note, it's where your runners run.
-name: build-push
+# kind: pipeline
+# type: kubernetes # Note, it's where your runners run.
+# name: build-push
 
-steps:
-  - name: docker-build
-    image: plugins/docker
-    volumes:
-      - name: dockersock
-        path: /var/run
-    settings:
-      repo: 192.168.49.2:5000/fstack-be
-      tags:
-        - ${DRONE_COMMIT_SHA:0:8}
-        - latest
-      registry: 192.168.49.2:5000
-      insecure: true
-    when:
-      event: [push]
+# steps:
+#   - name: docker-build
+#     image: plugins/docker
+#     volumes:
+#       - name: dockersock
+#         path: /var/run
+#     settings:
+#       repo: 192.168.49.2:5000/fstack-be
+#       tags:
+#         - ${DRONE_COMMIT_SHA:0:8}
+#         - latest
+#       registry: 192.168.49.2:5000
+#       insecure: true
+#     when:
+#       event: [push]
 
-services:
-  - name: docker
-    image: docker:dind
-    privileged: true
-    command: ["sh", "-c", "dockerd --insecure-registry 192.168.49.2:5000"]
-    volumes:
-      - name: dockersock
-        path: /var/run
+# services:
+#   - name: docker
+#     image: docker:dind
+#     privileged: true
+#     command: ["sh", "-c", "dockerd --insecure-registry 192.168.49.2:5000"]
+#     volumes:
+#       - name: dockersock
+#         path: /var/run
 
-volumes:
-  - name: dockersock
-    temp: {}
----
+# volumes:
+#   - name: dockersock
+#     temp: {}
+# ---
 kind: pipeline
 type: kubernetes
 name: deploy-prod
@@ -44,37 +44,21 @@ steps:
     commands:
       - echo $KUBE_SERVER $KUBE_TOKEN $KUBE_CA_CERT
       - echo "$KUBE_CA_CERT" > /tmp/ca.crt
-      - kubectl --server=$KUBE_SERVER --token=$KUBE_TOKEN --certificate-authority=/tmp/ca.crt get pods
+      - kubectl --server=$KUBE_SERVER --token=$KUBE_TOKEN --certificate-authority=/tmp/ca.crt get deployment
       - kubectl --server=$KUBE_SERVER --token=$KUBE_TOKEN --certificate-authority=/tmp/ca.crt set image deployment/fstack-be fstack-be=192.168.49.2:5000/fstack-be:${DRONE_COMMIT_SHA:0:8}
     environment:
       KUBE_SERVER: https://kubernetes.default.svc
-      KUBE_TOKEN: 
+      KUBE_TOKEN:
         from_secret: kube_token
-      KUBE_CA_CERT: |
-        -----BEGIN CERTIFICATE-----
-        MIIDBjCCAe6gAwIBAgIBATANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwptaW5p
-        a3ViZUNBMB4XDTI1MDgxOTA1MzYwM1oXDTM1MDgxODA1MzYwM1owFTETMBEGA1UE
-        AxMKbWluaWt1YmVDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJyL
-        4hvJDcrdYrH9cFhQG2vShgKSK8k6xSHXlTNMaEfjSSPLLhg/ynevLPUekbFpdqUV
-        Hc/Y73fcIOKCm3+niI1+3reN46Dositieuafej1UfoiqcUcQMNf0iCzn9toperGU
-        tNxpRic4SsqrPWH93xODUV25w9Nq8G6UpVZZ1bGJa+vVs4jBO9ZyPqfoCLjQbMax
-        k5TsPYg7Vpk1sn7yQmI6nUalclKgpEM+OnPd1NXdz2fDazeS7ycWa3h2WURQHIPF
-        Xs34+iNKrqXu8bbBNhlMKZmrkFV69WPutNvLPhUYMcK9CLGScCyf8Sm8Ho2d9wd8
-        mqY2pPNIQk4Y9n+rGJ8CAwEAAaNhMF8wDgYDVR0PAQH/BAQDAgKkMB0GA1UdJQQW
-        MBQGCCsGAQUFBwMCBggrBgEFBQcDATAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQW
-        BBQNehksJ4vD/qUnbqqDIUdPcWhQ8DANBgkqhkiG9w0BAQsFAAOCAQEAWgfGnK0z
-        +U3aapeNLLXDBB3JkyvPsg11vF5cmar0nN3bdNKuqRBQMmNsS4VkVFd051R4C27m
-        pqVF2I2oJo9DeIvmxJs7cZjmaAeSMz7B705fh6x1vBYsUs8AnBBONKJBgXmWocga
-        59TjhMX67dGJjMK3wiyEc6YdsydTvge7hxHFZxeOCtUQ5eiDZPFyR87UJwRosyt8
-        ypMOt6BJe3AsbwJ1BD+BOI6WKVt8Jm1uEw/x0KdxwJEyKsiSQYdN22RbLDqjnRJC
-        dT62o0OYlqpBH+0YCoEVKEx7qgwYq48Cf3SBaeImJW5HU0s/4GB+FSoGcloxxoc+
-        qTocV3JUbw9xPQ==
-        -----END CERTIFICATE-----
+      KUBE_CA_CERT:
+        from_secret: kube_ca_cert
 
 ---
 kind: secret
 name: kube_token # This is the secret name in Drone
-data: eyJhbGciOiJSUzI1NiIsImtpZCI6ImRoSFBCeXlKbEZzSVhSN2RrQ0lCRzh3S1NycXFlcE1Rd19JeHhpNzJYWjAifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRyb25lLWNpLWFnZW50LXRva2VuIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImRyb25lLWNpLWFnZW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiZGViMDVmMTYtYWQyZi00NDFkLWI2YWYtYWZhM2FiMjFiN2ZlIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRlZmF1bHQ6ZHJvbmUtY2ktYWdlbnQifQ.SjEkiiZsATGj_s3WUZ3ZDL5x2vPTlFJk-lvccOq2d6rYoVyBzFDaJ5sC0UxaBdCVJQJgAyD-7Q5NJdiUQ7gzOvEQ5hqU0UDu4VEroS4pcokC_wY6D-27GHJLRK4uK-EHDIjIyrnrlsnwlH3qW85VaTY8HZXD__6OSH1cO6tpYYoglvjC7dtetsHE34fxT68kZf6BPHLaPeWhlkEbIJ1XJgn-bhK3MoGakNy8jOZrSYWqFiNjbm05ax_4OsVSQCDdV_qnddSdqbBe9p6mcMLSDysZmVMngvSjUMnEfHFOOXZHliCmeQTH5zJZERdK6TkFF5HHqwP7qnIZDfNxdKUOLg
+get:
+  path: drone-ci-agent-token # Name of the Kubernetes Secret
+  name: token # Key within the Kubernetes Secret
 ---
 kind: secret
 name: kube_ca_cert # This is the secret name in Drone
