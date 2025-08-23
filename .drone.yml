@@ -53,16 +53,4 @@ steps:
       KUBE_CA_CERT:
         from_secret: kube_ca_cert
 
----
-kind: secret
-name: kube_token # This is the secret name in Drone
-get:
-  path: drone-ci-agent-token # Name of the Kubernetes Secret
-  name: token # Key within the Kubernetes Secret
----
-kind: secret
-name: kube_ca_cert # This is the secret name in Drone
-get:
-  path: drone-ci-agent-token # Name of the Kubernetes Secret
-  name: ca.crt # Key within the Kubernetes Secret
-
+# kube_token kube_ca_cert 都在drone repo settings里填写了
