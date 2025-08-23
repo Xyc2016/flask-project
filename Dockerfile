@@ -1,12 +1,12 @@
-FROM python:3.13-alpine AS builder
+FROM python:3.13-slim-bookworm AS builder
 
 WORKDIR /app
 
 COPY requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/pip,id=flask-project-pip pip install -r requirements.txt
-RUN adduser --uid 1000 app
+RUN adduser --uid 1000 appuser
 
-USER app
+USER appuser
 
-COPY --chown=app:app . .
+COPY --chown=appuser:appuser . .
 CMD ["sh", "-c", "gunicorn --workers 4 --bind 0.0.0.0:8000 main:app --access-logfile - --error-logfile -"]
