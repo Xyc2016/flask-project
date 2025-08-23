@@ -1,43 +1,43 @@
-# kind: pipeline
-# type: kubernetes # Note, it's where your runners run.
-# name: build-push
+kind: pipeline
+type: kubernetes # Note, it's where your runners run.
+name: build-push
 
-# steps:
-#   - name: docker-build
-#     image: plugins/docker
-#     volumes:
-#       - name: dockersock
-#         path: /var/run
-#     settings:
-#       repo: 192.168.49.2:5000/fstack-be
-#       tags:
-#         - ${DRONE_COMMIT_SHA:0:8}
-#         - latest
-#       registry: 192.168.49.2:5000
-#       insecure: true
-#     when:
-#       event: [push]
+steps:
+  - name: docker-build
+    image: plugins/docker
+    volumes:
+      - name: dockersock
+        path: /var/run
+    settings:
+      repo: 192.168.49.2:5000/fstack-be
+      tags:
+        - ${DRONE_COMMIT_SHA:0:8}
+        - latest
+      registry: 192.168.49.2:5000
+      insecure: true
+    when:
+      event: [push]
 
-# services:
-#   - name: docker
-#     image: docker:dind
-#     privileged: true
-#     command: ["sh", "-c", "dockerd --insecure-registry 192.168.49.2:5000"]
-#     volumes:
-#       - name: dockersock
-#         path: /var/run
+services:
+  - name: docker
+    image: docker:dind
+    privileged: true
+    command: ["sh", "-c", "dockerd --insecure-registry 192.168.49.2:5000"]
+    volumes:
+      - name: dockersock
+        path: /var/run
 
-# volumes:
-#   - name: dockersock
-#     temp: {}
-# ---
+volumes:
+  - name: dockersock
+    temp: {}
+---
 kind: pipeline
 type: kubernetes
 name: deploy-prod
 
-# trigger:
-#   event:
-#     - promote
+trigger:
+  event:
+    - promote
 steps:
   - name: deploy-prod
     image: bitnami/kubectl:1.33.1
