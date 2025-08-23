@@ -48,7 +48,8 @@ steps:
       - kubectl --server=$KUBE_SERVER --token=$KUBE_TOKEN --certificate-authority=/tmp/ca.crt set image deployment/fstack-be fstack-be=192.168.49.2:5000/fstack-be:${DRONE_COMMIT_SHA:0:8}
     environment:
       KUBE_SERVER: https://kubernetes.default.svc
-      KUBE_TOKEN: eyJhbGciOiJSUzI1NiIsImtpZCI6ImRoSFBCeXlKbEZzSVhSN2RrQ0lCRzh3S1NycXFlcE1Rd19JeHhpNzJYWjAifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRyb25lLWNpLWFnZW50LXRva2VuIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImRyb25lLWNpLWFnZW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiZGViMDVmMTYtYWQyZi00NDFkLWI2YWYtYWZhM2FiMjFiN2ZlIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRlZmF1bHQ6ZHJvbmUtY2ktYWdlbnQifQ.SjEkiiZsATGj_s3WUZ3ZDL5x2vPTlFJk-lvccOq2d6rYoVyBzFDaJ5sC0UxaBdCVJQJgAyD-7Q5NJdiUQ7gzOvEQ5hqU0UDu4VEroS4pcokC_wY6D-27GHJLRK4uK-EHDIjIyrnrlsnwlH3qW85VaTY8HZXD__6OSH1cO6tpYYoglvjC7dtetsHE34fxT68kZf6BPHLaPeWhlkEbIJ1XJgn-bhK3MoGakNy8jOZrSYWqFiNjbm05ax_4OsVSQCDdV_qnddSdqbBe9p6mcMLSDysZmVMngvSjUMnEfHFOOXZHliCmeQTH5zJZERdK6TkFF5HHqwP7qnIZDfNxdKUOLg
+      KUBE_TOKEN: 
+        from_secret: kube_token
       KUBE_CA_CERT: |
         -----BEGIN CERTIFICATE-----
         MIIDBjCCAe6gAwIBAgIBATANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwptaW5p
@@ -70,15 +71,13 @@ steps:
         qTocV3JUbw9xPQ==
         -----END CERTIFICATE-----
 
-# ---
-# kind: secret
-# name: kube_token # This is the secret name in Drone
-# get:
-#   path: drone-ci-agent-token # Name of the Kubernetes Secret
-#   name: token # Key within the Kubernetes Secret
-# ---
-# kind: secret
-# name: kube_ca_cert # This is the secret name in Drone
-# get:
-#   path: drone-ci-agent-token # Name of the Kubernetes Secret
-#   name: ca.crt # Key within the Kubernetes Secret
+---
+kind: secret
+name: kube_token # This is the secret name in Drone
+data: eyJhbGciOiJSUzI1NiIsImtpZCI6ImRoSFBCeXlKbEZzSVhSN2RrQ0lCRzh3S1NycXFlcE1Rd19JeHhpNzJYWjAifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRyb25lLWNpLWFnZW50LXRva2VuIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImRyb25lLWNpLWFnZW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiZGViMDVmMTYtYWQyZi00NDFkLWI2YWYtYWZhM2FiMjFiN2ZlIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRlZmF1bHQ6ZHJvbmUtY2ktYWdlbnQifQ.SjEkiiZsATGj_s3WUZ3ZDL5x2vPTlFJk-lvccOq2d6rYoVyBzFDaJ5sC0UxaBdCVJQJgAyD-7Q5NJdiUQ7gzOvEQ5hqU0UDu4VEroS4pcokC_wY6D-27GHJLRK4uK-EHDIjIyrnrlsnwlH3qW85VaTY8HZXD__6OSH1cO6tpYYoglvjC7dtetsHE34fxT68kZf6BPHLaPeWhlkEbIJ1XJgn-bhK3MoGakNy8jOZrSYWqFiNjbm05ax_4OsVSQCDdV_qnddSdqbBe9p6mcMLSDysZmVMngvSjUMnEfHFOOXZHliCmeQTH5zJZERdK6TkFF5HHqwP7qnIZDfNxdKUOLg
+---
+kind: secret
+name: kube_ca_cert # This is the secret name in Drone
+get:
+  path: drone-ci-agent-token # Name of the Kubernetes Secret
+  name: ca.crt # Key within the Kubernetes Secret
