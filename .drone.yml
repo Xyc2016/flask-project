@@ -42,17 +42,12 @@ steps:
   - name: deploy-prod
     image: bitnami/kubectl:1.33.1
     commands:
-      - cat /etc/kube/config
-      - kubectl config view
-      - kubectl config get-contexts
-      - kubectl config set-context --current --namespace=default
-      - kubectl cluster-info
+      - echo $KUBE_SERVER $KUBE_TOKEN $KUBE_CA_CERT
       - kubectl get pods
       - kubectl set image deployment/fstack-be fstack-be=192.168.49.2:5000/fstack-be:${DRONE_COMMIT_SHA:0:8}
     environment:
-      KUBECONFIG: /etc/kube/config
-      PROD_NAMESPACE: fstack-prod
-      REGISTRY: 192.168.49.2:5000
-    volumes:
-      - name: kubeconfig
-        path: /etc/kube
+      KUBE_SERVER: https://kubernetes.default.svc
+      KUBE_TOKEN:
+        from_secret: drone-ci-agent/token
+      KUBE_CA_CERT:
+        from_secret: drone-ci-agent/ca.crt
