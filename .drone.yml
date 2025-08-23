@@ -65,3 +65,4 @@ name: kube_ca_cert # This is the secret name in Drone
 get:
   path: drone-ci-agent-token # Name of the Kubernetes Secret
   name: ca.crt # Key within the Kubernetes Secret
+
