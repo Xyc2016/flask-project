@@ -35,9 +35,9 @@ kind: pipeline
 type: kubernetes
 name: deploy-prod
 
-trigger:
-  event:
-    - promote
+# trigger:
+#   event:
+#     - promote
 steps:
   - name: deploy-prod
     image: bitnami/kubectl:1.33.1
