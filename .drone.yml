@@ -48,6 +48,19 @@ steps:
     environment:
       KUBE_SERVER: https://kubernetes.default.svc
       KUBE_TOKEN:
-        from_secret: drone-ci-agent/token
+        from_secret: kube_token
       KUBE_CA_CERT:
-        from_secret: drone-ci-agent/ca.crt
+        from_secret: kube_ca_cert
+
+---
+kind: secret
+name: kube_token # This is the secret name in Drone
+get:
+  path: drone-ci-agent # Name of the Kubernetes Secret
+  name: token # Key within the Kubernetes Secret
+---
+kind: secret
+name: kube_ca_cert # This is the secret name in Drone
+get:
+  path: drone-ci-agent # Name of the Kubernetes Secret
+  name: ca.crt # Key within the Kubernetes Secret
