@@ -4,7 +4,7 @@ from prometheus_flask_exporter import PrometheusMetrics
 app = Flask(__name__)
 metrics = PrometheusMetrics(app)
 
-metrics.info("flask-project", "Backend of Fstack app", version="1.0.0")
+metrics.info("fstack-be", "Backend of Fstack app", version="1.0.0")
 
 
 @app.route("/api/greet")
